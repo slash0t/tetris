@@ -11,15 +11,17 @@ class Settings(QtWidgets.QMainWindow):
         self.d = None
         self.load_info()
 
+        self.button_save.clicked.connect(self.save)
+
         self.show()
 
     def load_info(self):
         with open('data/settings.json') as f:
             self.d = json.loads(f.read())
 
-        self.line_line.setText(self.d["points_for_line"])
-        self.line_tetris.setText(self.d["points_for_tetris"])
-        self.line_tick.setText(self.d["tick_time"])
+        self.line_line.setText(str(self.d["points_for_line"]))
+        self.line_tetris.setText(str(self.d["points_for_tetris"]))
+        self.line_tick.setText(str(self.d["tick_time"]))
 
     def can_save(self):
         return self.line_line.text().isnumeric() \
@@ -40,6 +42,6 @@ class Settings(QtWidgets.QMainWindow):
             msg.setText("Найстройки успешно сохранены")
 
             with open('data/settings.json', 'w') as f:
-                f.write(json.dumps(self.d))
+                f.write(json.dumps(self.d, indent=4))
 
         msg.exec()

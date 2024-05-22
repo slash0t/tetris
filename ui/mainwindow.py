@@ -63,7 +63,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         return d
 
-    def launch_settings_window(self):
+    @asyncSlot()
+    async def launch_settings_window(self):
         if self.settings is not None:
             self.settings.close()
 
