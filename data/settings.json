@@ -29,5 +29,7 @@
     ]
   ],
   "difficulty_levels": 2,
-  "tick_time": 175
+  "tick_time": 175,
+  "points_for_line": 100,
+  "points_for_tetris": 1000
 }
