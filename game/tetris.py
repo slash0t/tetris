@@ -215,3 +215,23 @@ class Tetris:
             self.curr_block_pos = new_pos
 
         self.place_block(self.curr_block, self.curr_block_pos)
+
+    def force_fall(self):
+        if self.curr_block is None:
+            return
+
+        self.destroy_block(self.curr_block, self.curr_block_pos)
+
+        x, y = self.curr_block_pos
+        state = Tetris.BlockPlacement.POSSIBLE
+
+        while state == Tetris.BlockPlacement.POSSIBLE:
+            y += 1
+
+            state = self.can_block_place(self.curr_block, (x, y))
+
+        y -= 1
+
+        self.curr_block_pos = (x, y)
+
+        self.place_block(self.curr_block, self.curr_block_pos)
