@@ -16,26 +16,26 @@ class Tetris:
         COLLIDES = 2
         OUT_OF_BOUNDS = 3
 
-    POINTS_PER_LINE = 100
-    POINTS_PER_TETRIS = 1000
+    def __init__(self, geometry, colors, difficulty_levels, **kwargs):
+        self.tick_time = kwargs.get("tick_time", 200)
+        self.width = kwargs.get("width", 10)
+        self.height = kwargs.get("height", 20)
 
-    def __init__(self, geometry, colors, difficulty_levels, tick_time=500, width=10, height=20, difficulty_ticks=200):
-        self.tick_time = tick_time
-        self.width = width
-        self.height = height
+        self.points_for_line = kwargs.get("points_per_line", 100)
+        self.points_for_tetris = kwargs.get("points_for_tetris", 1000)
 
-        false_line = [False] * width
-        black_line = [(0, 0, 0)] * width
+        false_line = [False] * self.width
+        black_line = [(0, 0, 0)] * self.width
         self.filled = []
         self.colors = []
-        for i in range(height):
+        for i in range(self.height):
             self.filled.append(deepcopy(false_line))
             self.colors.append(deepcopy(black_line))
 
         self.blocks_geometry = geometry
         self.block_colors = colors
         self.difficulty_levels = difficulty_levels
-        self.difficulty_ticks = difficulty_ticks
+        self.difficulty_ticks = kwargs.get("difficulty_ticks", 100)
 
         self._difficulty = 0
         self._score = 0
@@ -47,7 +47,7 @@ class Tetris:
         self.curr_block = None
         self.curr_block_pos = None
 
-        self.timer = Timer(tick_time/1000, self.perform_tick)
+        self.timer = Timer(self.tick_time/1000, self.perform_tick)
 
     async def start(self):
         if self._state != self.GameState.PAUSED:
@@ -184,9 +184,9 @@ class Tetris:
 
     def increase_score(self, lines_count):
         if lines_count > 3:
-            self._score += self.POINTS_PER_TETRIS
+            self._score += self.points_for_tetris
         else:
-            self._score += lines_count * self.POINTS_PER_LINE
+            self._score += lines_count * self.points_for_line
 
     def rotate_curr_block(self, right):
         if self.curr_block is None:
