@@ -14,7 +14,7 @@ class BlockGeometry:
             up = max(up, y)
             down = min(down, y)
 
-        self.size = max(right - left, up - down)
+        self.size = max(right - left, up - down) + 1
 
     def rotate(self, right):
         new_coords = []
