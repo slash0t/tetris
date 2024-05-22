@@ -401,11 +401,11 @@
      <string>Игра</string>
     </property>
     <addaction name="new_game"/>
+    <addaction name="settings"/>
     <addaction name="info"/>
    </widget>
    <addaction name="menu"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <action name="info">
    <property name="text">
     <string>Узнать больше</string>
@@ -414,6 +414,11 @@
   <action name="new_game">
    <property name="text">
     <string>Новая игра</string>
+   </property>
+  </action>
+  <action name="settings">
+   <property name="text">
+    <string>Настройки</string>
    </property>
   </action>
  </widget>
