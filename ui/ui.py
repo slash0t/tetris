@@ -1,3 +1,5 @@
+import json
+
 from PyQt5 import QtWidgets, uic, QtGui, QtCore
 
 from qasync import asyncSlot
@@ -32,13 +34,28 @@ class Ui(QtWidgets.QMainWindow):
         msg.setWindowTitle("Информация")
         msg.exec()
 
-    def read_settings(self):
-        d = {
-            "geometry": [BlockGeometry([(0, 0), (1, 0), (0, 1), (1, 1)])],
-            "colors": [[(0, 0, 0)]],
-            "difficulty_levels": 1,
-            "tick_time": 150,
-        }
+    @staticmethod
+    def read_settings():
+        d = {}
+
+        with open('data/settings.json') as f:
+            dd = json.loads(f.read())
+
+        d["difficulty_levels"] = dd["difficulty_levels"]
+        d["tick_time"] = dd["tick_time"]
+
+        colors = []
+        for arr in dd["colors"]:
+            curr = [tuple(color) for color in arr]
+            colors.append(curr)
+        d["colors"] = colors
+
+        geometry = []
+        for geom in dd["geometry"]:
+            curr = BlockGeometry([tuple(coord) for coord in geom])
+            geometry.append(curr)
+
+        d["geometry"] = geometry
 
         return d
 
@@ -89,6 +106,17 @@ class Ui(QtWidgets.QMainWindow):
                 if self.tetris.filled[i][j]:
                     color = self.tetris.colors[i][j]
                 self.table_tetris.item(i, j).setBackground(QtGui.QColor(*color))
+
+        for i in range(4):
+            for j in range(4):
+                self.table_preview.item(i, j).setBackground(QtGui.QColor(255, 255, 255))
+
+        block = self.tetris.get_next_block()
+        for pos in block.geometry.coords:
+            y, x = pos
+            x += 2 - block.geometry.size // 2
+            y += 2 - block.geometry.size // 2
+            self.table_preview.item(x, y).setBackground(QtGui.QColor(*block.color))
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_Up:
