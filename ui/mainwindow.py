@@ -101,6 +101,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.tetris.move_block(right)
 
+    def force_fall(self):
+        if self.tetris is None:
+            return
+        if self.tetris.get_state() != Tetris.GameState.ONGOING:
+            return
+
+        self.tetris.force_fall()
+
     @asyncSlot()
     async def redraw(self):
         if self.tetris is None:
@@ -137,6 +145,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.move(True)
         elif event.key() == QtCore.Qt.Key.Key_Left:
             self.move(False)
+        elif event.key() == QtCore.Qt.Key.Key_Down:
+            self.force_fall()
 
     def setup_tables(self):
         for i in range(20):
