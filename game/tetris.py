@@ -19,7 +19,7 @@ class Tetris:
     POINTS_PER_LINE = 100
     POINTS_PER_TETRIS = 1000
 
-    def __init__(self, geometry, colors, difficulty_levels, tick_time=500, width=6, height=8, difficulty_ticks=200):
+    def __init__(self, geometry, colors, difficulty_levels, tick_time=500, width=10, height=20, difficulty_ticks=200):
         self.tick_time = tick_time
         self.width = width
         self.height = height
@@ -66,7 +66,7 @@ class Tetris:
     def generate_next_block(self):
         index = self.random.randint(0, len(self.blocks_geometry) - 1)
         return Block(
-            self.blocks_geometry[index],
+            deepcopy(self.blocks_geometry[index]),
             self.block_colors[self._difficulty][index]
         )
 
@@ -83,13 +83,12 @@ class Tetris:
         return self._state
 
     async def perform_tick(self):
-        print("tick")
         if self.curr_block is None:
             new_block = self._next_block
             self._next_block = self.generate_next_block()
 
             geometry = new_block.geometry
-            start_pos = (self.width // 2 - geometry.size, geometry.size)
+            start_pos = (self.width // 2 - geometry.size // 2, 0)
 
             place_res = self.can_block_place(new_block, start_pos)
 
@@ -165,15 +164,23 @@ class Tetris:
         return filled
 
     def destroy_lines(self, lines):
-        for line in lines:
-            new_line = line - len(lines)
+        if lines is None or len(lines) == 0:
+            return
 
-            self.filled[line] = deepcopy(self.filled[new_line])
-            self.colors[line] = deepcopy(self.colors[new_line])
+        lower = min(lines)
+        upper = max(lines)
+        for line in range(upper, -1, -1):
+            new_line = line - upper + lower - 1
 
-        for line in range(len(lines)):
-            self.filled[line] = [False] * self.width
-            self.colors[line] = [(0, 0, 0)] * self.width
+            if new_line < 0:
+                fill = [False] * self.width
+                colors = [(0, 0, 0)] * self.width
+            else:
+                fill = deepcopy(self.filled[new_line])
+                colors = deepcopy(self.colors[new_line])
+
+            self.filled[line] = fill
+            self.colors[line] = colors
 
     def increase_score(self, lines_count):
         if lines_count > 3:
@@ -200,7 +207,7 @@ class Tetris:
             return
 
         self.destroy_block(self.curr_block, self.curr_block_pos)
-        new_pos = (self.curr_block_pos + right, self.curr_block_pos)
+        new_pos = (self.curr_block_pos[0] + (1 if right else -1), self.curr_block_pos[1])
 
         res = self.can_block_place(self.curr_block, new_pos)
 
